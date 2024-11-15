@@ -30,6 +30,7 @@ import {
 } from "../../util";
 import ConfirmationDialog from "../dialogs/ConfirmationDialog";
 import AddModelForm from "../../forms/AddModelForm";
+import { difference } from "lodash";
 
 interface ModelOptionProps {
   option: Option;
@@ -42,6 +43,7 @@ interface Option {
   value: string;
   title: string;
   apiKey: string;
+  endpoint?: string;
 }
 
 const MAX_HEIGHT_PX = 300;
@@ -230,8 +232,8 @@ function ModelSelect() {
 
   // Sort so that options without an API key are at the end
   useEffect(() => {
-    const enabledOptions = options.filter((option) => option.apiKey !== "");
-    const disabledOptions = options.filter((option) => option.apiKey === "");
+    const enabledOptions = options.filter((option) => option.apiKey !== "" || option.endpoint !== "");
+    const disabledOptions = difference(options, enabledOptions);
 
     const sorted = [...enabledOptions, ...disabledOptions];
 

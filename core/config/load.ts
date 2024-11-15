@@ -71,6 +71,7 @@ import {
   slashCommandFromPromptFile,
 } from "./promptFile.js";
 import { ConfigValidationError, validateConfig } from "./validation.js";
+import CustomHttpServiceClass from "../llm/llms/CustomHttpService.js";
 
 export interface ConfigResult<T> {
   config: T | undefined;
@@ -238,6 +239,12 @@ function isModelDescription(
   return (llm as ModelDescription).title !== undefined;
 }
 
+function isCustomHttpService(
+  llm: ModelDescription | CustomLLM,
+): llm is ModelDescription {
+  return (llm as ModelDescription).provider === "customHttpService";
+}
+
 function isContextProviderWithParams(
   contextProvider: CustomContextProvider | ContextProviderWithParams,
 ): contextProvider is ContextProviderWithParams {
@@ -258,6 +265,16 @@ async function intermediateToFinalConfig(
   // Auto-detect models
   let models: BaseLLM[] = [];
   for (const desc of config.models) {
+    if (isCustomHttpService(desc)) {
+      const customService = new CustomHttpServiceClass({
+        ...desc,
+        options: { ...desc, writeLog } as any,
+        endpoint: desc.endpoint!,
+      });
+      models.push(customService);
+      continue;
+    }
+
     if (isModelDescription(desc)) {
       const llm = await llmFromDescription(
         desc,
