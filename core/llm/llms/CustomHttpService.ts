@@ -22,21 +22,7 @@ class CustomHttpServiceClass extends BaseLLM {
   async *customStreamChat (
     input: string,
     options: CompletionOptions,
-  ): AsyncGenerator<string> {
-    const response = await this.fetch(this.endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        "name": "kaiyuy/leandojo-lean4-tacgen-byt5-small",
-        "prefix": "",
-        "input": input,
-      }),
-    });
-    const res = await response.text();
-    yield res;
-  }
+  ): AsyncGenerator<string> {}
 
   constructor(custom: CustomHttpService) {
     super(custom.options || { model: "customHttpService" });
@@ -60,11 +46,28 @@ class CustomHttpServiceClass extends BaseLLM {
     prompt: string,
     options: CompletionOptions,
   ): AsyncGenerator<string> {
-    for await (const content of this.customStreamChat(
-        prompt,
-        options,
-    )) {
-      yield content;
+    const response = await this.fetch(this.endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        "name": "kaiyuy/leandojo-lean4-tacgen-byt5-small",
+        "prefix": "",
+        "input": prompt,
+      }),
+    });
+    const res = await response.json() as {
+      outputs: Array<{
+        output: string;
+        score: number;
+      }>
+    };
+    const sortedScoreOutput = res.outputs.sort((a, b) => b.score - a.score);
+
+    const bestScore = sortedScoreOutput.map(({output}) => `${output};`);
+    for (const output of bestScore) {
+      yield output;
     }
   }
 }

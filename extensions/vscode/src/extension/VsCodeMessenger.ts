@@ -162,6 +162,7 @@ export class VsCodeMessenger {
 
     this.onWebview("applyToFile", async ({ data }) => {
       let filepath = data.filepath;
+      const model = data.usedModelTitle;
 
       // If there is a filepath, verify it exists and then open the file
       if (filepath) {
@@ -199,9 +200,9 @@ export class VsCodeMessenger {
       }
 
       // If document is empty, insert at 0,0 and finish
-      if (!editor.document.getText().trim()) {
+      if (!editor.document.getText().trim() || model === 'Custom Http Service') {
         editor.edit((builder) =>
-          builder.insert(new vscode.Position(0, 0), data.text),
+          builder.insert(new vscode.Position(editor.document.lineCount, 0), data.text),
         );
         await webviewProtocol.request("updateApplyState", {
           streamId: data.streamId,

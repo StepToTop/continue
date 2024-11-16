@@ -11,12 +11,14 @@ export interface useApplyCodeBlock {
   streamId: string;
   filepath?: string;
   codeBlockContent: string;
+  usedModelTitle?: string;
 }
 
 export function useApplyCodeBlock({
   streamId,
   filepath,
   codeBlockContent,
+  usedModelTitle
 }: useApplyCodeBlock) {
   const dispatch = useDispatch();
   const ideMessenger = useContext(IdeMessengerContext);
@@ -36,6 +38,7 @@ export function useApplyCodeBlock({
       streamId,
       curSelectedModelTitle: defaultModel.title,
       filepath,
+      usedModelTitle,
     });
 
     dispatch(incrementNextCodeBlockToApplyIndex({}));

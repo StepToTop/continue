@@ -6,7 +6,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { ChatHistoryItem } from "core";
 import { stripImages } from "core/llm/images";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { vscBackground, vscInputBackground } from "..";
@@ -17,6 +17,8 @@ import { getFontSize } from "../../util";
 import StyledMarkdownPreview from "../markdown/StyledMarkdownPreview";
 import { CopyIconButton } from "./CopyIconButton";
 import HeaderButtonWithToolTip from "./HeaderButtonWithToolTip";
+import { useApplyCodeBlock } from "../markdown/utils/useApplyCodeBlock";
+import { v4 as uuidv4 } from "uuid";
 
 interface StepContainerProps {
   item: ChatHistoryItem;
@@ -39,6 +41,43 @@ const ContentDiv = styled.div<{ isUserInput: boolean; fontSize?: number }>`
   font-size: ${(props) => props.fontSize || getFontSize()}px;
   overflow: hidden;
 `;
+
+function SuggestionItem({content}: {
+  content: string;
+}) {
+  const streamIdRef = useRef<string | null>(null);
+  const onClickApply = useApplyCodeBlock({
+    codeBlockContent: `\t${content}`,
+    streamId: streamIdRef.current,
+    usedModelTitle: 'Custom Http Service'
+  });
+
+  if (streamIdRef.current === null) {
+    streamIdRef.current = uuidv4();
+  }
+
+  return (
+    <a key={content} href="javascript:void(0)" onClick={onClickApply}>
+      {content}
+    </a>);
+}
+
+function CustomHttpServiceContent({content}: {
+  content: string;
+}) {
+  return (
+    <div
+      className="max-w-full overflow-x-auto whitespace-pre-wrap break-words p-4"
+      style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}
+    >
+      {content.split(';').map((item) => {
+        return (
+          <SuggestionItem key={item} content={item} />
+        );
+      })}
+    </div>
+  );
+}
 
 function StepContainer(props: StepContainerProps) {
   const active = useSelector((store: RootState) => store.state.active);
@@ -82,6 +121,22 @@ function StepContainer(props: StepContainerProps) {
     }
   };
 
+  const customHttpServiceContent = useMemo(() => {
+    if (!props.item.promptLogs) {
+      return null;
+    }
+    const prompt = props.item.promptLogs[props.item.promptLogs.length - 1];
+
+    if (prompt?.modelTitle !== 'Custom HTTP Service') {
+      return null;
+    }
+
+    return (
+      <CustomHttpServiceContent content={prompt.completion} />
+    );
+    
+  }, [props.item]);
+
   return (
     <div
       className="relative"
@@ -94,7 +149,7 @@ function StepContainer(props: StepContainerProps) {
         isUserInput={isUserInput}
         fontSize={getFontSize()}
       >
-        {uiConfig?.displayRawMarkdown ? (
+        {customHttpServiceContent ? customHttpServiceContent : uiConfig?.displayRawMarkdown ? (
           <pre
             className="max-w-full overflow-x-auto whitespace-pre-wrap break-words p-4"
             style={{ fontSize: getFontSize() - 2 }}
