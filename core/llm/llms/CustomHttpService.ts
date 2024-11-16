@@ -31,17 +31,22 @@ class CustomHttpServiceClass extends BaseLLM {
       body: JSON.stringify({
         "name": "kaiyuy/leandojo-lean4-tacgen-byt5-small",
         "prefix": "",
-        "input": "(a b c : Nat) : a + b + c = a + c + b",
+        "input": input,
       }),
     });
     const res = await response.text();
-    console.error(res);
     yield res;
   }
 
   constructor(custom: CustomHttpService) {
     super(custom.options || { model: "customHttpService" });
     this.endpoint = custom.endpoint;
+    this.templateMessages = (messages: ChatMessage[]): string => {
+      const res = messages
+       .map((message) => message.content)
+       .join("\n");
+      return res;
+    }
   }
 
   protected async *_streamChat(
