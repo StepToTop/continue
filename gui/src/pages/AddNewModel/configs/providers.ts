@@ -762,4 +762,23 @@ To get started, [register](https://dataplatform.cloud.ibm.com/registration/stepo
     ],
     apiKeyUrl: "https://studio.nebius.ai/settings/api-keys",
   },
+  customHttpService: {
+    title: "Custom HTTP Service",
+    provider: "customHttpService",
+    description: "Use a custom HTTP service to run models",
+    longDescription: `Use a custom HTTP service to run models.`,
+    icon: "",
+    packages: [models.customHttpService],
+    tags: [],
+    params: {},
+    collectInputFor: [
+      {
+        inputType: "text",
+        key: "endpoint",
+        label: "Generator Endpoint",
+        placeholder: "http://localhost:23337",
+        required: true,
+      },
+    ],
+  }
 };

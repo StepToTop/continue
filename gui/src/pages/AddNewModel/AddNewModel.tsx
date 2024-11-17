@@ -52,6 +52,7 @@ const modelsByProvider: Record<string, ModelPackage[]> = {
   DeepSeek: [models.deepseekCoderApi, models.deepseekChatApi],
   Gemini: [models.geminiPro, models.gemini15Pro, models.gemini15Flash],
   "Open Source": [models.llama3Chat, models.mistralOs, models.deepseek],
+  "Custom HTTP endpoint": [models.customHTTPService],
 };
 
 function AddNewModel() {

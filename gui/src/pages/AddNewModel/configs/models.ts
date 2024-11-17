@@ -1149,4 +1149,14 @@ export const models: { [key: string]: ModelPackage } = {
     providerOptions: [],
     isOpenSource: false,
   },
+  customHttpService: {
+    title: "Custom HTTP Service",
+    description:
+      "A custom HTTP service that implements the adapted API",
+    params: {
+      model: "CUSTOM_HTTP_SERVICE",
+    } as any,
+    providerOptions: [],
+    isOpenSource: false,
+  },
 };

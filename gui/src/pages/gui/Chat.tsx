@@ -404,7 +404,7 @@ export function Chat() {
                       onDelete={() => {
                         dispatch(deleteMessage(index));
                       }}
-                      modelTitle={item.promptLogs?.[0]?.modelTitle ?? ""}
+                      modelTitle={item.promptLogs?.[0]?.modelTitle ?? "--"}
                     />
                   </TimelineItem>
                 </div>

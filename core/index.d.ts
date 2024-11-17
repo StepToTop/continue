@@ -404,6 +404,10 @@ export type CustomLLM = RequireAtLeastOne<
   "streamCompletion" | "streamChat"
 >;
 
+export type CustomHttpService = CustomLLMWithOptionals & {
+  endpoint: string;
+};
+
 // IDE
 
 export type DiffLineType = "new" | "old" | "same";
@@ -654,7 +658,8 @@ type ModelProvider =
   | "askSage"
   | "vertexai"
   | "nebius"
-  | "xAI";
+  | "xAI"
+  | "customHttpService";
 
 export type ModelName =
   | "AUTODETECT"
@@ -842,6 +847,7 @@ export interface ModelDescription {
   promptTemplates?: { [key: string]: string };
   capabilities?: ModelCapability;
   cacheBehavior?: CacheBehavior;
+  endpoint?: string;
 }
 
 export type EmbeddingsProviderName =

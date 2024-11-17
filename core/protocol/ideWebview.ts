@@ -24,6 +24,7 @@ export type ToIdeFromWebviewProtocol = ToIdeFromWebviewOrCoreProtocol & {
       streamId: string;
       curSelectedModelTitle: string;
       filepath?: string;
+      usedModelTitle?: string;
     },
     void,
   ];
